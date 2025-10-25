@@ -9,12 +9,10 @@ namespace passwords_backend.Controllers
     [Route("api/[controller]")]
     public class AccountsController : ControllerBase
     {
-        private readonly AppDbContext _appDbContext;
         private readonly AccountHandler _accountHandler;
 
-        public AccountsController(AppDbContext appDbContext, AccountHandler accountHandler)
+        public AccountsController(AccountHandler accountHandler)
         {
-            _appDbContext = appDbContext;
             _accountHandler = accountHandler;
         }
         [HttpGet]
@@ -24,59 +22,37 @@ namespace passwords_backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(Guid id)
+        public async Task<ResponseApi<Account>> GetAccount(Guid id)
         {
-            var account = await _appDbContext.Accounts.FindAsync(id);
-
-            if (account == null)
-            {
-                return NotFound("Conta não encontrada");
-            }
-
-            return Ok(account);
+            return await _accountHandler.GetAccountAsync(id);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(Guid id, [FromBody] Account updateAccount)
+        public async Task<ResponseApi<string>> UpdateAccount(Guid id, [FromBody] Account updateAccount)
         {
-            var actualAccount = await _appDbContext.Accounts.FindAsync(id);
 
-            if (actualAccount == null)
-            {
-                return NotFound("Conta não encontrada!");
-            }
-
-            _appDbContext.Entry(actualAccount).CurrentValues.SetValues(updateAccount);
-            await _appDbContext.SaveChangesAsync();
-            return StatusCode(201, updateAccount);
+            return await _accountHandler.UpdateAccountAsync(id, updateAccount);
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> AddAccount([FromBody] Account account)
+        public async Task<ResponseApi<string>> AddAccount([FromBody] Account account)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+                string errorMessage = string.Join("; ", errors);
+
+                return new ResponseApi<string>(504, errorMessage, null);
             }
-            _appDbContext.Accounts.Add(account);
-            await _appDbContext.SaveChangesAsync();
-            return Created("Senha salva com sucesso!", account);
+            return await _accountHandler.AddAccountAsync(account);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(Guid id)
+        public async Task<ResponseApi<string>> DeleteAccount(Guid id)
         {
-            var account = await _appDbContext.Accounts.FindAsync(id);
-
-            if (account == null)
-            {
-                return NotFound("Conta não encontrada!");
-            }
-
-            _appDbContext.Accounts.Remove(account);
-            await _appDbContext.SaveChangesAsync();
-            return Ok("Conta deletada com sucesso!");
+            return await _accountHandler.DeleteAccount(id);
         }
 
     }
