@@ -26,13 +26,12 @@ public static class PasswordService
         Buffer.BlockCopy(hashBytes, 0, salt, 0, 16);
 
         byte[] storedSubKey = new byte[32];
-        Buffer.BlockCopy(hashBytes, 16, storedSubKey, 16, 32);
+        Buffer.BlockCopy(hashBytes, 16, storedSubKey, 0, 32);
 
         var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100_000, HashAlgorithmName.SHA256);
         byte[] computedSubKey = pbkdf2.GetBytes(32);
 
         return CryptographicOperations.FixedTimeEquals(storedSubKey, computedSubKey);
-
 
     }
 

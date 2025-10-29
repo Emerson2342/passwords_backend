@@ -11,9 +11,9 @@ namespace passwords_backend.Models
         public string PasswordHash { get; set; } = string.Empty;
 
 
-        public static User CreateUserDTO(CreateUserDTO user)
-        {
 
+        public static User CreateUser(CreateUserDTO user)
+        {
             var passwordHash = PasswordService.HashPassword(user.Password);
             return new User
             {

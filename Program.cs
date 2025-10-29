@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using passwords_backend.Data;
+using passwords_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,9 @@ var connectionString = builder.Configuration.GetConnectionString("AppDbConnectio
 builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AccountHandler>();
+builder.Services.AddScoped<UserHandler>();
+builder.Services.AddSingleton<TokenService>();
+
 
 var app = builder.Build();
 
