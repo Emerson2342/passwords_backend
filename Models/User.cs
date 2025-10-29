@@ -1,3 +1,5 @@
+using passwords_backend.Services;
+
 namespace passwords_backend.Models
 {
 
@@ -7,6 +9,22 @@ namespace passwords_backend.Models
         public string Email { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
-        public string Token { get; set; } = string.Empty;
+
+
+        public static User CreateUserDTO(CreateUserDTO user)
+        {
+
+            var passwordHash = PasswordService.HashPassword(user.Password);
+            return new User
+            {
+                Email = user.Email,
+                UserName = user.UserName,
+                PasswordHash = passwordHash
+            };
+        }
+
+
+
+
     }
 }
