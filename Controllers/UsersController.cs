@@ -8,7 +8,7 @@ using passwords_backend.Models;
 namespace passwords_backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly UserHandler _userHandler;

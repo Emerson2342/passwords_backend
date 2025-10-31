@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using passwords_backend.Data;
@@ -6,7 +7,8 @@ using passwords_backend.Models;
 namespace passwords_backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
+    [Authorize]
     public class AccountsController : ControllerBase
     {
         private readonly AccountHandler _accountHandler;
