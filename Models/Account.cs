@@ -13,5 +13,9 @@ namespace passwords_backend.Models
         [Required(ErrorMessage = "Senha é um campo obrigatório")]
         public string PasswordHash { get; set; } = string.Empty;
         public bool IsOnTrash { get; set; } = false;
+
+        [Required]
+        public Guid UserId { get; set; }
+        public User User { get; set; } = new User();
     }
 }

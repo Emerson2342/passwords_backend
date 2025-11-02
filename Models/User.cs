@@ -9,6 +9,7 @@ namespace passwords_backend.Models
         public string Email { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
+        public List<Account> Accounts { get; set; } = [];
 
 
 
