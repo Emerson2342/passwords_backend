@@ -35,7 +35,7 @@ namespace passwords_backend.Services
         private static ClaimsIdentity GenerateClaims(User user)
         {
             var ci = new ClaimsIdentity();
-            ci.AddClaim(new Claim("subject", user.Id.ToString()));
+            ci.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             return ci;
         }
     }

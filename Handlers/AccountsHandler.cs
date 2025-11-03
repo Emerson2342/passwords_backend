@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using passwords_backend.Data;
@@ -16,9 +17,12 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
         var pageSize = 10;
         try
         {
+            var userId = Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
             var totalItems = await _context.Accounts.CountAsync();
 
             var accounts = await _context.Accounts
+            .Where(x => x.UserId == userId)
             .OrderBy(a => a.AccountName)
             .Skip((pageNumber - 1) * pageSize)
             .Take(10)
@@ -73,7 +77,7 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao adicionar a conta {newAccount.AccountName}", newAccount.Id);
+            _logger.LogError(ex, $"Erro ao adicionar a conta {newAccount.AccountName}", newAccount.Id);
             return new ResponseApi<string>(500, textError, null);
         }
     }

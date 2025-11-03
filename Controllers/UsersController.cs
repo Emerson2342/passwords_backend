@@ -17,7 +17,7 @@ namespace passwords_backend.Controllers
         {
             _userHandler = userHandler;
         }
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<ResponseApi<string>> Login([FromBody] LoginDTO login)
         {
             return await _userHandler.Login(login);

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace passwords_backend.Controllers
         {
             _accountHandler = accountHandler;
         }
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ResponseApi<IEnumerable<Account>>> GetAllAccounts([FromQuery] int pageNumber = 1)
         {
             return await _accountHandler.GetAllAccountsAsync(pageNumber);
