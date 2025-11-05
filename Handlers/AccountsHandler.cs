@@ -1,15 +1,16 @@
+namespace passwords_backend.Handlers;
+
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using passwords_backend.Data;
-using passwords_backend.Helper;
 using passwords_backend.Models;
 
-public class AccountHandler(AppDbContext context, IHttpContextAccessor httpContextAccessor, ILogger<AccountHandler> logger, CryptoHelper cryptoHelper)
+
+public class AccountHandler(AppDbContext context, IHttpContextAccessor httpContextAccessor, ILogger<AccountHandler> logger)
 {
     private readonly AppDbContext _context = context;
     private readonly ILogger<AccountHandler> _logger = logger;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly CryptoHelper _cryptoHelper = cryptoHelper;
 
     private readonly string textError = "Ocorreu um erro, por favor, tente novamente mais tarde";
 
@@ -74,8 +75,6 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
             var userId = Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             newAccount.UserId = userId;
             newAccount.IsOnTrash = false;
-            newAccount.PasswordHash = _cryptoHelper.Encrypt(newAccount.PasswordHash);
-            Console.WriteLine(newAccount.PasswordHash);
             _context.Accounts.Add(newAccount);
             await _context.SaveChangesAsync();
             return new ResponseApi<string>(200, "Success", null);

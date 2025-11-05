@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using passwords_backend.Data;
+using passwords_backend.Handlers;
 using passwords_backend.Models;
 using passwords_backend.Services;
 

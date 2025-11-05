@@ -1,8 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using passwords_backend.Data;
 using passwords_backend.Extensions;
-using passwords_backend.Helper;
+using passwords_backend.Handlers;
 using passwords_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +17,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AccountHandler>();
 builder.Services.AddScoped<UserHandler>();
 builder.Services.AddSingleton<TokenService>();
-builder.Services.AddSingleton<CryptoHelper>();
 
 
 var app = builder.Build();
