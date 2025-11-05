@@ -9,14 +9,10 @@ namespace passwords_backend.Controllers
 {
     [ApiController]
     [Route("v1/api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UserController(UserHandler userHandler) : ControllerBase
     {
-        private readonly UserHandler _userHandler;
+        private readonly UserHandler _userHandler = userHandler;
 
-        public UsersController(UserHandler userHandler)
-        {
-            _userHandler = userHandler;
-        }
         [HttpPost("login")]
         public async Task<ResponseApi<string>> Login([FromBody] LoginDTO login)
         {

@@ -10,14 +10,10 @@ namespace passwords_backend.Controllers
     [ApiController]
     [Route("v1/api/[controller]")]
     [Authorize]
-    public class AccountsController : ControllerBase
+    public class AccountController(AccountHandler accountHandler) : ControllerBase
     {
-        private readonly AccountHandler _accountHandler;
+        private readonly AccountHandler _accountHandler = accountHandler;
 
-        public AccountsController(AccountHandler accountHandler)
-        {
-            _accountHandler = accountHandler;
-        }
         [HttpGet("all")]
         public async Task<ResponseApi<IEnumerable<Account>>> GetAllAccounts([FromQuery] int pageNumber = 1)
         {

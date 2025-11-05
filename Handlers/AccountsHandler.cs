@@ -1,14 +1,15 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using passwords_backend.Data;
+using passwords_backend.Helper;
 using passwords_backend.Models;
 
-public class AccountHandler(AppDbContext context, IHttpContextAccessor httpContextAccessor, ILogger<AccountHandler> logger)
+public class AccountHandler(AppDbContext context, IHttpContextAccessor httpContextAccessor, ILogger<AccountHandler> logger, CryptoHelper cryptoHelper)
 {
     private readonly AppDbContext _context = context;
     private readonly ILogger<AccountHandler> _logger = logger;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly CryptoHelper _cryptoHelper = cryptoHelper;
 
     private readonly string textError = "Ocorreu um erro, por favor, tente novamente mais tarde";
 
@@ -70,6 +71,11 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
     {
         try
         {
+            var userId = Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            newAccount.UserId = userId;
+            newAccount.IsOnTrash = false;
+            newAccount.PasswordHash = _cryptoHelper.Encrypt(newAccount.PasswordHash);
+            Console.WriteLine(newAccount.PasswordHash);
             _context.Accounts.Add(newAccount);
             await _context.SaveChangesAsync();
             return new ResponseApi<string>(200, "Success", null);
@@ -82,11 +88,12 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
         }
     }
 
-    public async Task<ResponseApi<string>> UpdateAccountAsync(Guid id, Account updateAccount)
+    public async Task<ResponseApi<string>> UpdateAccountAsync(Guid accountId, Account updateAccount)
     {
         try
         {
-            var currentAccount = await _context.Accounts.FindAsync(id);
+            var userId = Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var currentAccount = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == accountId && x.UserId == userId);
             if (currentAccount == null)
             {
                 return new ResponseApi<string>(404, "Not found!", null);
@@ -98,16 +105,17 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Erro ao atualizar a conta com ID {id}", id);
+            _logger.LogError(ex, $"Erro ao atualizar a conta com ID {accountId}", accountId);
             return new ResponseApi<string>(500, textError, null);
         }
     }
 
-    public async Task<ResponseApi<string>> DeleteAccount(Guid id)
+    public async Task<ResponseApi<string>> DeleteAccount(Guid accountId)
     {
         try
         {
-            var account = await _context.Accounts.FindAsync(id);
+            var userId = Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == accountId && userId == a.UserId);
             if (account == null)
             {
                 return new ResponseApi<string>(404, "Conta não encontrada!", null);
@@ -119,7 +127,7 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Erro ao deletar conta com ID {id}", id);
+            _logger.LogError(ex, $"Erro ao deletar conta com ID {accountId}", accountId);
             return new ResponseApi<string>(500, textError, null);
         }
     }
