@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using passwords_backend.Data;
+using passwords_backend.Handlers;
 using passwords_backend.Models;
 
 namespace passwords_backend.Controllers
