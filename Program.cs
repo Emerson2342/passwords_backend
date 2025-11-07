@@ -25,16 +25,21 @@ builder.Services.AddSingleton<TokenService>();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
-    try
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if (app.Environment.IsProduction())
     {
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        db.Database.Migrate();
-        Console.WriteLine("Migrations aplicadas com sucesso.");
+        try
+        {
+            db.Database.Migrate();
+            Console.WriteLine("Migrations aplicadas com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao aplicar migrations: {ex.Message}");
+        }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Erro ao aplicar migrations: {ex.Message}");
-    }
+
 }
 
 if (app.Environment.IsDevelopment())
