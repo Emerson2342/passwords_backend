@@ -35,4 +35,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/", () => new
+{
+    status = "API funcionando!",
+    time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+});
+
 app.Run();
