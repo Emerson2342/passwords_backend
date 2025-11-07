@@ -23,7 +23,19 @@ builder.Services.AddSingleton<TokenService>();
 
 
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+        Console.WriteLine("Migrations aplicadas com sucesso.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro ao aplicar migrations: {ex.Message}");
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -43,11 +55,5 @@ app.MapGet("/", () => new
     status = "API funcionando!",
     time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
 });
-
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
 
 app.Run();
