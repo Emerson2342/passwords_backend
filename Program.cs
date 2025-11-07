@@ -1,6 +1,9 @@
+using passwords_backend.Data;
 using passwords_backend.Extensions;
 using passwords_backend.Handlers;
 using passwords_backend.Services;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,5 +43,11 @@ app.MapGet("/", () => new
     status = "API funcionando!",
     time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
 });
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
