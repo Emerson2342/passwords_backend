@@ -28,7 +28,7 @@ namespace passwords_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ResponseApi<string>> UpdateAccount(Guid id, [FromBody] Account updateAccount)
+        public async Task<ResponseApi<string>> UpdateAccount(Guid id, [FromBody] UpdateAccountDto updateAccount)
         {
 
             return await _accountHandler.UpdateAccountAsync(id, updateAccount);

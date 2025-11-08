@@ -21,7 +21,7 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
         {
             var userId = Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            var totalItems = await _context.Accounts.CountAsync();
+            var totalItems = await _context.Accounts.Where(x => x.UserId == userId).CountAsync();
 
             var accounts = await _context.Accounts
             .Where(x => x.UserId == userId)
@@ -87,18 +87,29 @@ public class AccountHandler(AppDbContext context, IHttpContextAccessor httpConte
         }
     }
 
-    public async Task<ResponseApi<string>> UpdateAccountAsync(Guid accountId, Account updateAccount)
+    public async Task<ResponseApi<string>> UpdateAccountAsync(Guid accountId, UpdateAccountDto dto)
     {
         try
         {
             var userId = Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
             var currentAccount = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == accountId && x.UserId == userId);
+
             if (currentAccount == null)
             {
                 return new ResponseApi<string>(404, "Not found!", null);
             }
-            _context.Accounts.Entry(currentAccount).CurrentValues.SetValues(updateAccount);
+
+            if (!string.IsNullOrEmpty(dto.AccountName))
+                currentAccount.AccountName = dto.AccountName;
+
+            if (!string.IsNullOrEmpty(dto.PasswordHash))
+                currentAccount.PasswordHash = dto.PasswordHash;
+            if (dto.IsOnTrash.HasValue)
+                currentAccount.IsOnTrash = dto.IsOnTrash.Value;
+
             await _context.SaveChangesAsync();
+
             return new ResponseApi<string>(200, "Success", null);
 
         }
