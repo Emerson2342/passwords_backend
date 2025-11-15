@@ -13,11 +13,6 @@ public static class BuilderExtension
     public static void AddDataBase(this WebApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString("AppDbConnectionsString");
-        Console.WriteLine("Connection string carregada:");
-        Console.WriteLine(string.IsNullOrEmpty(connectionString)
-            ? "NULA ou vazia!"
-            : connectionString.Replace("password=", "password=*****"));
-
         builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
     }
 
