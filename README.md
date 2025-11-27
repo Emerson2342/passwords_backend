@@ -23,6 +23,7 @@ A API fornece:
 - ✔ Armazenamento de senhas criptografadas
 - ✔ Rotas protegidas por Token Bearer
 - ✔ Documentação automática com Swagger (Swashbuckle)
+- ✔ Listagem de senhas **paginada**, com informações de paginação retornadas nos headers da resposta
 
 Ideal para uso com apps ou front-ends que precisam manipular senhas com máxima segurança.
 
