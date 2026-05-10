@@ -55,10 +55,15 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapGet("/", () => new
+app.MapGet("/", () =>
 {
-    status = "API funcionando!",
-    time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
-});
-
+    return Results.Ok(new
+    {
+        app = "Passwords Backend",
+        status = "online",
+        environment = app.Environment.EnvironmentName,
+        uptime = Environment.TickCount64
+    });
+})
+.WithTags("Health");
 app.Run();
